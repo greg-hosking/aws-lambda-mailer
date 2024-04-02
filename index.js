@@ -13,8 +13,43 @@ const sendEmail = async (emailData) => {
         const mailOptions = {
             from: process.env.GMAIL_USER,
             to: process.env.GMAIL_USER,
-            subject: `New Contact from ${emailData.name}`,
-            text: `You have received a new message from ${emailData.name} (${emailData.email}):\n\n${emailData.message}`,
+            subject: `New Message from ${emailData.name}`,
+            text: `
+                You have received a new message from ${emailData.name} (${emailData.email}):
+                \n
+                \n
+                ${emailData.message}
+            `,
+        };
+
+        await transporter.sendMail(mailOptions);
+    } catch (error) {
+        throw error;
+    }
+};
+
+const sendConfirmationEmail = async (emailData) => {
+    try {
+        const mailOptions = {
+            from: process.env.GMAIL_USER,
+            to: emailData.email,
+            subject: "Thank You for Your Message",
+            text: `
+                Hello ${emailData.name},
+                \n
+                \n
+                Thank you for taking the time to message me. I will get back to you as soon as possible.
+                \n
+                \n
+                Best,
+                \n
+                Greg Hosking
+                \n
+                \n
+                (Here is a copy of the message you sent me)
+                \n
+                ${emailData.message}
+            `,
         };
 
         await transporter.sendMail(mailOptions);
@@ -24,30 +59,34 @@ const sendEmail = async (emailData) => {
 };
 
 exports.handler = async function (event) {
+    const headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Methods": "OPTIONS, POST",
+    };
+
+    if (event.httpMethod === "OPTIONS") {
+        return {
+            statusCode: 200,
+            headers: headers,
+            body: JSON.stringify({ message: "CORS preflight response" }),
+        };
+    }
+
     try {
-        console.log("process.env.GMAIL_USER", process.env.GMAIL_USER);
-        console.log("process.env.GMAIL_PASS", process.env.GMAIL_PASS);
-        console.log("event", event);
-        console.log("event.body", event.body);
-
         const emailData = JSON.parse(event.body);
-        console.log("emailData", emailData);
-
         await sendEmail(emailData);
+        await sendConfirmationEmail(emailData);
 
         return {
             statusCode: 200,
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-            },
+            headers: headers,
             body: JSON.stringify({ message: "Email sent successfully!" }),
         };
     } catch (error) {
         return {
             statusCode: 500,
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-            },
+            headers: headers,
             body: JSON.stringify({
                 message: "Error sending email",
                 error: error.message,
