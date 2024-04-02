@@ -42,4 +42,4 @@ jobs:
             - name: Deploy to AWS Lambda
               run: |
                   zip lambda.zip index.js node_modules
-                  aws lambda update-function-code --function-name=greg-hosking-github-io-lambda --zip-file=fileb://index.zip
+                  aws lambda update-function-code --function-name=greg-hosking-github-io-lambda --zip-file=fileb://lambda.zip
