@@ -30,12 +30,18 @@ exports.handler = async function (event) {
 
         return {
             statusCode: 200,
+            headers: {
+                "Access-Control-Allow-Origin": "*", // CORS header
+            },
             // body: JSON.stringify({ message: "Email sent successfully!" }),
             body: JSON.stringify({ event: event, eventBody: event.body }),
         };
     } catch (error) {
         return {
             statusCode: 500,
+            headers: {
+                "Access-Control-Allow-Origin": "*", // CORS header
+            },
             body: JSON.stringify({
                 message: "Error sending email",
                 error: error.message,
