@@ -25,7 +25,7 @@ const sendEmail = async () => {
 export async function handler(event) {
     const response = {
         statusCode: 200,
-        body: JSON.stringify({ message: "Hello from Lambda!", event: event }),
+        body: JSON.stringify("Hello from Lambda!"),
     };
     return response;
 }
