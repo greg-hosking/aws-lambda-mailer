@@ -8,36 +8,6 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-const sendEmail = async (emailData) => {
-    try {
-        const mailOptions = {
-            from: process.env.GMAIL_USER,
-            to: process.env.GMAIL_USER,
-            subject: `New Message from ${emailData.name}`,
-            text: `You have received a new message from ${emailData.name} (${emailData.email}):\n\n${emailData.message}`,
-        };
-
-        await transporter.sendMail(mailOptions);
-    } catch (error) {
-        throw error;
-    }
-};
-
-const sendConfirmationEmail = async (emailData) => {
-    try {
-        const mailOptions = {
-            from: process.env.GMAIL_USER,
-            to: emailData.email,
-            subject: "Thank You for Your Message",
-            text: `Hello ${emailData.name},\n\nThank you for taking the time to message me! I will get back to you as soon as possible.\n\nBest,\nGreg Hosking\n\n(Here is a copy of the message you sent me)\n${emailData.message}`,
-        };
-
-        await transporter.sendMail(mailOptions);
-    } catch (error) {
-        throw error;
-    }
-};
-
 exports.handler = async function (event) {
     const headers = {
         "Access-Control-Allow-Origin": "*",
@@ -54,9 +24,21 @@ exports.handler = async function (event) {
     }
 
     try {
-        const emailData = JSON.parse(event.body);
-        await sendEmail(emailData);
-        await sendConfirmationEmail(emailData);
+        const data = JSON.parse(event.body);
+
+        await transporter.sendMail({
+            from: process.env.GMAIL_USER,
+            to: process.env.GMAIL_USER,
+            subject: `New Message from ${data.name}`,
+            text: `You have received a new message from ${data.name} (${data.email}):\n\n${data.message}`,
+        });
+
+        await transporter.sendMail({
+            from: process.env.GMAIL_USER,
+            to: data.email,
+            subject: "Thank You for Your Message",
+            text: `Hello ${data.name},\n\nThank you for taking the time to message me! I will get back to you as soon as possible.\n\nBest,\nGreg Hosking\n\n(Here is a copy of the message you sent me)\n${data.message}`,
+        });
 
         return {
             statusCode: 200,
