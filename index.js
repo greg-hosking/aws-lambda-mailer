@@ -29,7 +29,7 @@ const sendConfirmationEmail = async (emailData) => {
             from: process.env.GMAIL_USER,
             to: emailData.email,
             subject: "Thank You for Your Message",
-            text: `Hello ${emailData.name},\n\nThank you for taking the time to message me. I will get back to you as soon as possible.\n\nBest,\nGreg Hosking\n\n(Here is a copy of the message you sent me)\n${emailData.message}`,
+            text: `Hello ${emailData.name},\n\nThank you for taking the time to message me! I will get back to you as soon as possible.\n\nBest,\nGreg Hosking\n\n(Here is a copy of the message you sent me)\n${emailData.message}`,
         };
 
         await transporter.sendMail(mailOptions);
