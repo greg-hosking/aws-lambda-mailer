@@ -25,7 +25,14 @@ const sendEmail = async (emailData) => {
 
 exports.handler = async function (event) {
     try {
+        console.log("process.env.GMAIL_USER", process.env.GMAIL_USER);
+        console.log("process.env.GMAIL_PASS", process.env.GMAIL_PASS);
+        console.log("event", event);
+        console.log("event.body", event.body);
+
         const emailData = JSON.parse(event.body);
+        console.log("emailData", emailData);
+
         await sendEmail(emailData);
 
         return {
