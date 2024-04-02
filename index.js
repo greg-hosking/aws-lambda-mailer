@@ -25,22 +25,21 @@ const sendEmail = async (emailData) => {
 
 exports.handler = async function (event) {
     try {
-        // const emailData = JSON.parse(event.body);
-        // await sendEmail(emailData);
+        const emailData = JSON.parse(event.body);
+        await sendEmail(emailData);
 
         return {
             statusCode: 200,
             headers: {
-                "Access-Control-Allow-Origin": "*", // CORS header
+                "Access-Control-Allow-Origin": "*",
             },
-            // body: JSON.stringify({ message: "Email sent successfully!" }),
-            body: JSON.stringify({ event: event, eventBody: event.body }),
+            body: JSON.stringify({ message: "Email sent successfully!" }),
         };
     } catch (error) {
         return {
             statusCode: 500,
             headers: {
-                "Access-Control-Allow-Origin": "*", // CORS header
+                "Access-Control-Allow-Origin": "*",
             },
             body: JSON.stringify({
                 message: "Error sending email",
