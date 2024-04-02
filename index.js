@@ -13,7 +13,7 @@ const sendEmail = async (emailData) => {
         const mailOptions = {
             from: process.env.GMAIL_USER,
             to: process.env.GMAIL_USER,
-            subject: `New Contact from ${emailData.name}: ${emailData.subject}`,
+            subject: `New Contact from ${emailData.name}`,
             text: `You have received a new message from ${emailData.name} (${emailData.email}):\n\n${emailData.message}`,
         };
 
@@ -25,12 +25,13 @@ const sendEmail = async (emailData) => {
 
 exports.handler = async function (event) {
     try {
-        const emailData = JSON.parse(event.body);
-        await sendEmail(emailData);
+        // const emailData = JSON.parse(event.body);
+        // await sendEmail(emailData);
 
         return {
             statusCode: 200,
-            body: JSON.stringify({ message: "Email sent successfully!" }),
+            // body: JSON.stringify({ message: "Email sent successfully!" }),
+            body: JSON.stringify({ event: event, eventBody: event.body }),
         };
     } catch (error) {
         return {
