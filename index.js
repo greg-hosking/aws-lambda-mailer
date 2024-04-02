@@ -1,5 +1,4 @@
 const nodemailer = require("nodemailer");
-const validator = require("validator").default;
 
 const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -9,7 +8,7 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-const validateAndSanitizeData = (data) => {
+const validateData = (data) => {
     if (!data.email || !data.name || !data.message) {
         const error = new Error("Missing email, name, or message");
         error.statusCode = 400;
@@ -27,17 +26,12 @@ const validateAndSanitizeData = (data) => {
         error.statusCode = 400;
         throw error;
     }
-    if (!validator.isEmail(data.email)) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(data.email)) {
         const error = new Error("Invalid email address");
         error.statusCode = 400;
         throw error;
     }
-
-    return {
-        email: validator.escape(data.email),
-        name: validator.escape(data.name),
-        message: validator.escape(data.message),
-    };
 };
 
 exports.handler = async function (event) {
@@ -56,8 +50,8 @@ exports.handler = async function (event) {
     }
 
     try {
-        const rawData = JSON.parse(event.body);
-        const data = validateAndSanitizeData(rawData);
+        const data = JSON.parse(event.body);
+        validateData(data);
 
         await transporter.sendMail({
             from: process.env.GMAIL_USER,
