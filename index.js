@@ -14,12 +14,7 @@ const sendEmail = async (emailData) => {
             from: process.env.GMAIL_USER,
             to: process.env.GMAIL_USER,
             subject: `New Message from ${emailData.name}`,
-            text: `
-                You have received a new message from ${emailData.name} (${emailData.email}):
-                \n
-                \n
-                ${emailData.message}
-            `,
+            text: `You have received a new message from ${emailData.name} (${emailData.email}):\n\n${emailData.message}`,
         };
 
         await transporter.sendMail(mailOptions);
@@ -34,22 +29,7 @@ const sendConfirmationEmail = async (emailData) => {
             from: process.env.GMAIL_USER,
             to: emailData.email,
             subject: "Thank You for Your Message",
-            text: `
-                Hello ${emailData.name},
-                \n
-                \n
-                Thank you for taking the time to message me. I will get back to you as soon as possible.
-                \n
-                \n
-                Best,
-                \n
-                Greg Hosking
-                \n
-                \n
-                (Here is a copy of the message you sent me)
-                \n
-                ${emailData.message}
-            `,
+            text: `Hello ${emailData.name},\n\nThank you for taking the time to message me. I will get back to you as soon as possible.\n\nBest,\nGreg Hosking\n\n(Here is a copy of the message you sent me)\n${emailData.message}`,
         };
 
         await transporter.sendMail(mailOptions);
