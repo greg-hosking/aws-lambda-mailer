@@ -34,6 +34,6 @@ jobs:
             - name: Deploy to AWS Lambda
               run: |
                   zip -r lambda.zip index.js node_modules
-                  aws lambda update-function-code --function-name=greg-hosking-github-io-lambda --zip-file=fileb://lambda.zip
-                  aws lambda wait function-updated --function-name=greg-hosking-github-io-lambda
-                  aws lambda update-function-configuration --function-name=greg-hosking-github-io-lambda --environment "Variables={GMAIL_USER=${{ secrets.GMAIL_USER }},GMAIL_PASS=${{ secrets.GMAIL_PASS}}}"
+                  aws lambda update-function-code --function-name=${{ secrets.AWS_LAMBDA_FUNCTION_NAME }} --zip-file=fileb://lambda.zip
+                  aws lambda wait function-updated --function-name=${{ secrets.AWS_LAMBDA_FUNCTION_NAME }}
+                  aws lambda update-function-configuration --function-name=${{ secrets.AWS_LAMBDA_FUNCTION_NAME }} --environment "Variables={GMAIL_USER=${{ secrets.GMAIL_USER }},GMAIL_PASS=${{ secrets.GMAIL_PASS}}}"
