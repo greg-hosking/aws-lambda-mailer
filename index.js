@@ -8,14 +8,15 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-const sendEmail = async () => {
+const sendEmail = async (emailData) => {
     try {
         const mailOptions = {
             from: process.env.GMAIL_USER,
-            to: "email@example.com",
-            subject: "Example Subject",
-            text: "Example email body.",
+            to: process.env.GMAIL_USER,
+            subject: `New Contact from ${emailData.name}: ${emailData.subject}`,
+            text: `You have received a new message from ${emailData.name} (${emailData.email}):\n\n${emailData.message}`,
         };
+
         await transporter.sendMail(mailOptions);
     } catch (error) {
         throw error;
@@ -23,9 +24,21 @@ const sendEmail = async () => {
 };
 
 exports.handler = async function (event) {
-    const response = {
-        statusCode: 200,
-        body: JSON.stringify({ message: "Hello from Lambda!", event: event }),
-    };
-    return response;
+    try {
+        const emailData = JSON.parse(event.body);
+        await sendEmail(emailData);
+
+        return {
+            statusCode: 200,
+            body: JSON.stringify({ message: "Email sent successfully!" }),
+        };
+    } catch (error) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify({
+                message: "Error sending email",
+                error: error.message,
+            }),
+        };
+    }
 };
