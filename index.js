@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const validator = require("validator").default;
 
 const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -7,6 +8,37 @@ const transporter = nodemailer.createTransport({
         pass: process.env.GMAIL_PASS,
     },
 });
+
+const validateAndSanitizeData = (data) => {
+    if (!data.email || !data.name || !data.message) {
+        const error = new Error("Missing email, name, or message");
+        error.statusCode = 400;
+        throw error;
+    }
+    if (
+        typeof data.email !== "string" ||
+        !data.email.trim() ||
+        typeof data.name !== "string" ||
+        !data.name.trim() ||
+        typeof data.message !== "string" ||
+        !data.message.trim()
+    ) {
+        const error = new Error("Invalid email, name, or message");
+        error.statusCode = 400;
+        throw error;
+    }
+    if (!validator.isEmail(data.email)) {
+        const error = new Error("Invalid email address");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    return {
+        email: validator.escape(data.email),
+        name: validator.escape(data.name),
+        message: validator.escape(data.message),
+    };
+};
 
 exports.handler = async function (event) {
     const headers = {
@@ -24,7 +56,8 @@ exports.handler = async function (event) {
     }
 
     try {
-        const data = JSON.parse(event.body);
+        const rawData = JSON.parse(event.body);
+        const data = validateAndSanitizeData(rawData);
 
         await transporter.sendMail({
             from: process.env.GMAIL_USER,
@@ -32,7 +65,6 @@ exports.handler = async function (event) {
             subject: `New Message from ${data.name}`,
             text: `You have received a new message from ${data.name} (${data.email}):\n\n${data.message}`,
         });
-
         await transporter.sendMail({
             from: process.env.GMAIL_USER,
             to: data.email,
@@ -47,11 +79,10 @@ exports.handler = async function (event) {
         };
     } catch (error) {
         return {
-            statusCode: 500,
+            statusCode: error.statusCode || 500,
             headers: headers,
             body: JSON.stringify({
-                message: "Error sending email",
-                error: error.message,
+                message: error.message || "An error occurred",
             }),
         };
     }
