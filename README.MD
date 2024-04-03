@@ -1,1 +1,3 @@
-# // TO DO
+# AWS Lambda Mailer
+
+// TO DO...
